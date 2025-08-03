@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prefeitura de Apodi/RN - Sistema de Integridade Documental</title>
+    <meta name="description" content="Sistema de gestão documental com verificação de integridade da Prefeitura de Apodi/RN">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1E8A57; /* Verde principal da Prefeitura de Apodi */
+            --secondary: #0F4A2D; /* Verde mais escuro para gradientes */
+        }
+        body { font-family: 'Inter', system-ui, sans-serif; color: #334155; }
+        .gradient-bg { background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%); }
+        .card { transition: all 0.3s; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0; }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        .nav-link { transition: all 0.3s ease; padding: 0.5rem 1rem; border-radius: 6px; }
+        .nav-link:hover, .nav-link:focus { background-color: rgba(255, 255, 255, 0.15); transform: translateY(-2px); }
+        .btn { transition: all 0.3s; border-radius: 8px; font-weight: 500; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .divider { height: 3px; width: 80px; background: var(--primary); margin: 1rem auto; border-radius: 3px; }
+        .document-hash { font-family: 'Fira Code', monospace; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px dashed #cbd5e1; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <header class="gradient-bg text-white sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <a href="/" class="flex items-center mb-4 md:mb-0">
+                    <img src="/static/brasao.png" alt="Brasão da Prefeitura de Apodi" class="h-14 mr-3">
+                    <div>
+                        <h1 class="text-xl font-bold leading-tight">Prefeitura Municipal de Apodi</h1>
+                        <p class="text-sm opacity-90">Estado do Rio Grande do Norte</p>
+                    </div>
+                </a>
+                
+                <nav class="flex items-center gap-2">
+                    <a href="/" class="nav-link"><i class="fas fa-home mr-1"></i> Início</a>
+                    <a href="/transparencia" class="nav-link"><i class="fas fa-search mr-1"></i> Transparência</a>
+                    <a href="/verificador" class="nav-link"><i class="fas fa-shield-alt mr-1"></i> Verificador</a>
+                    <a href="#contact" class="nav-link"><i class="fas fa-envelope mr-1"></i> Contato</a>
+                    <a href="/login" class="btn bg-white text-[var(--primary)] font-medium px-5 py-2.5 ml-2">
+                        <i class="fas fa-sign-in-alt mr-2"></i> Acessar
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <section class="gradient-bg text-white py-20">
+            <div class="container mx-auto px-4 text-center">
+                <div class="max-w-3xl mx-auto">
+                    <h2 class="text-4xl md:text-5xl font-bold mb-6">Integridade e Transparência na Gestão Pública</h2>
+                    <p class="text-xl mb-8 opacity-90">Utilizando tecnologia de ponta para garantir a autenticidade de documentos governamentais.</p>
+                    <div class="flex flex-col sm:flex-row justify-center gap-4">
+                         <a href="/verificador" class="btn bg-white text-[var(--primary)] font-medium py-3 px-8 rounded-lg text-lg">
+                            <i class="fas fa-shield-alt mr-2"></i> Acessar Ferramenta
+                        </a>
+                        <a href="/transparencia" class="btn border-2 border-white text-white font-medium py-3 px-8 rounded-lg bg-white bg-opacity-10 hover:bg-opacity-20">
+                            <i class="fas fa-search mr-2"></i> Ver Transparência
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-20 bg-gray-50">
+            <div class="container mx-auto px-4">
+                <div class="text-center max-w-2xl mx-auto mb-16">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Como Funciona a Verificação</h2>
+                    <div class="divider"></div>
+                    <p class="text-gray-600">Cada documento oficial recebe uma "impressão digital" única e inviolável.</p>
+                </div>
+                
+                <div class="max-w-2xl mx-auto card bg-white overflow-hidden">
+                    <div class="p-8">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <h3 class="font-bold text-2xl text-gray-900">Decreto Municipal nº 4.567/2025</h3>
+                                <p class="text-gray-500">Gabinete do Prefeito</p>
+                            </div>
+                            <span class="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">
+                                <i class="fas fa-check-circle mr-1"></i> Válido
+                            </span>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <p class="text-sm font-medium text-gray-500 mb-2">Hash de Integridade (SHA-256):</p>
+                            <div class="document-hash text-sm">
+                                3a3d86cc8027f68df51e79f2f2e4a8e95bc84adf1a52c36a3b5e7c8f9d0e1f2a
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div>
+                                <p class="text-gray-500 text-sm">Data de registro:</p>
+                                <p class="font-medium">15/07/2025 às 14:32</p>
+                            </div>
+                            <a href="/verificador" class="btn bg-[var(--primary)] text-white px-6 py-2.5 w-full sm:w-auto text-center">
+                                <i class="fas fa-search mr-2"></i> Verificar autenticidade
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="py-20 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="text-center max-w-2xl mx-auto mb-16">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Fale Conosco</h2>
+                    <div class="divider"></div>
+                    <p class="text-gray-600">Tem dúvidas ou precisa de suporte? A Prefeitura de Apodi está pronta para ajudar.</p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto">
+                    <div class="card bg-white p-8">
+                        <h3 class="text-xl font-bold mb-6 text-[var(--primary)]">
+                            <i class="fas fa-paper-plane mr-2"></i> Envie uma Mensagem
+                        </h3>
+                        <form>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2" for="name">Nome</label>
+                                <input type="text" id="name" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2" for="email">E-mail</label>
+                                <input type="email" id="email" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2" for="message">Mensagem</label>
+                                <textarea id="message" rows="4" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg"></textarea>
+                            </div>
+                            <button type="submit" class="btn bg-[var(--primary)] text-white w-full py-2.5 px-6">
+                                <i class="fas fa-paper-plane mr-2"></i> Enviar Mensagem
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <div>
+                        <div class="card bg-white p-8">
+                            <h3 class="text-xl font-bold mb-6 text-[var(--primary)]">
+                                <i class="fas fa-phone-alt mr-2"></i> Contato Direto
+                            </h3>
+                            <div class="space-y-4">
+                                <div class="flex items-start">
+                                    <div class="bg-green-50 p-3 rounded-lg mr-4">
+                                        <i class="fas fa-building text-[var(--primary)]"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-gray-900">Paço Municipal</h4>
+                                        <p class="text-gray-600">Praça Francisco Pinto, 46 - Centro, Apodi - RN, 59700-000</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <div class="bg-green-50 p-3 rounded-lg mr-4">
+                                        <i class="fas fa-phone text-[var(--primary)]"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-gray-900">Telefone</h4>
+                                        <p class="text-gray-600">(84) 3333-2355</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <div class="bg-green-50 p-3 rounded-lg mr-4">
+                                        <i class="fas fa-envelope text-[var(--primary)]"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-gray-900">E-mail</h4>
+                                        <p class="text-gray-600">gabinete@apodi.rn.gov.br</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-gray-300 py-8">
+        <div class="container mx-auto px-4 text-center text-sm">
+            <p>© 2025 Prefeitura Municipal de Apodi. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Suaviza o scroll para âncoras
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

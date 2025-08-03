@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeriHash - Acesso ao Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #1E8A57; --secondary: #0F4A2D; }
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%); }
+        .spinner { animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .nav-link { transition: all 0.3s ease; padding: 0.5rem 1rem; border-radius: 6px; }
+        .nav-link:hover, .nav-link:focus { background-color: rgba(255, 255, 255, 0.15); transform: translateY(-2px); }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <header class="gradient-bg text-white">
+        <div class="container mx-auto px-4 py-3">
+             <nav class="flex items-center justify-center gap-4">
+                <a href="/" class="nav-link"><i class="fas fa-home mr-1"></i> Início</a>
+                <a href="/transparencia" class="nav-link"><i class="fas fa-search mr-1"></i> Transparência</a>
+                <a href="/verificador" class="nav-link"><i class="fas fa-shield-alt mr-1"></i> Verificador</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex items-center justify-center py-12 px-4">
+        <div class="w-full max-w-md">
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+                <div class="gradient-bg p-6 text-center">
+                    <div class="flex justify-center mb-4">
+                        <div class="bg-white p-3 rounded-full shadow-lg">
+                            <i class="fas fa-lock text-[var(--primary)] text-2xl"></i>
+                        </div>
+                    </div>
+                    <h1 id="form-title" class="text-2xl font-bold text-white">Acesso ao Portal</h1>
+                    <p class="text-blue-100 mt-2">Use suas credenciais para continuar</p>
+                </div>
+                
+                <div class="bg-white p-8">
+                    <form id="authForm" class="space-y-6">
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+                            <input id="email" name="email" type="email" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 border px-3" placeholder="seu.email@exemplo.com" required>
+                        </div>
+                        
+                        <div>
+                            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+                            <input id="password" name="password" type="password" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 border px-3" placeholder="••••••••" required>
+                        </div>
+                        
+                        <div>
+                            <button type="submit" id="submitButton" class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[var(--primary)] hover:bg-[var(--secondary)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300">
+                                <span id="buttonText">Entrar</span>
+                                <span id="spinner" class="spinner hidden ml-2"><i class="fas fa-circle-notch"></i></span>
+                            </button>
+                        </div>
+
+                        <div class="text-center text-sm mt-4">
+                            <p id="toggle-p" class="text-gray-600">
+                                Não tem uma conta? 
+                                <a href="#" id="toggle-link" class="font-medium text-blue-600 hover:text-blue-500">
+                                    Cadastre-se aqui
+                                </a>
+                            </p>
+                        </div>
+                    </form>
+                    
+                    <div id="message" class="hidden mt-4 p-3 rounded text-sm text-center"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const form = document.getElementById('authForm');
+        const formTitle = document.getElementById('form-title');
+        const buttonText = document.getElementById('buttonText');
+        const submitButton = document.getElementById('submitButton');
+        const spinner = document.getElementById('spinner');
+        const message = document.getElementById('message');
+        const toggleP = document.getElementById('toggle-p');
+
+        let isLoginMode = true;
+
+        function updateFormMode() {
+            if (isLoginMode) {
+                formTitle.textContent = 'Acesso ao Portal';
+                buttonText.textContent = 'Entrar';
+                toggleP.innerHTML = 'Não tem uma conta? <a href="#" class="font-medium text-blue-600 hover:text-blue-500">Cadastre-se aqui</a>';
+            } else {
+                formTitle.textContent = 'Crie sua Conta';
+                buttonText.textContent = 'Cadastrar';
+                toggleP.innerHTML = 'Já tem uma conta? <a href="#" class="font-medium text-blue-600 hover:text-blue-500">Faça o login</a>';
+            }
+            // Re-adiciona o event listener ao novo link
+            toggleP.querySelector('a').addEventListener('click', (e) => {
+                e.preventDefault();
+                isLoginMode = !isLoginMode;
+                message.classList.add('hidden');
+                updateFormMode();
+            });
+        }
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            buttonText.textContent = isLoginMode ? 'Entrando...' : 'Cadastrando...';
+            spinner.classList.remove('hidden');
+            submitButton.disabled = true;
+            message.classList.add('hidden');
+
+            const email = form.email.value;
+            const password = form.password.value;
+            const endpoint = isLoginMode ? '/handle_login' : '/signup';
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage('success', data.message);
+                    if (!isLoginMode) {
+                        isLoginMode = true; // Muda para o modo de login após o sucesso do cadastro
+                    }
+                } else {
+                    showMessage('error', data.error || 'Ocorreu um erro desconhecido.');
+                }
+
+            } catch (error) {
+                showMessage('error', 'Não foi possível conectar ao servidor.');
+            } finally {
+                updateFormMode();
+                spinner.classList.add('hidden');
+                submitButton.disabled = false;
+            }
+        });
+
+        function showMessage(type, text) {
+            message.textContent = text;
+            message.classList.remove('hidden');
+            if (type === 'success') {
+                message.className = 'mt-4 p-3 rounded text-sm text-center bg-green-100 text-green-700';
+            } else { // error
+                message.className = 'mt-4 p-3 rounded text-sm text-center bg-red-100 text-red-700';
+            }
+        }
+        
+        // Inicializa o formulário e o link pela primeira vez
+        updateFormMode();
+    </script>
+</body>
+</html>

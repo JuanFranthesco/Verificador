@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisador Inteligente de Documentos</title>
+    <meta name="description" content="Sistema de análise de documentos para detecção de fraudes">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb; --secondary: #1e40af; --success: #10b981; --dark: #1e293b;
+        }
+        body { font-family: 'Inter', system-ui, sans-serif; line-height: 1.6; color: #334155; }
+        .gradient-bg { background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%); }
+        .card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0; }
+        .nav-link { transition: all 0.3s ease; padding: 0.5rem 1rem; border-radius: 6px; }
+        .nav-link:hover, .nav-link:focus { background-color: rgba(255, 255, 255, 0.15); transform: translateY(-2px); outline: none; }
+        .btn { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 8px; font-weight: 500; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .file-input-label:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .document-hash { font-family: 'Fira Code', monospace; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px dashed #cbd5e1; }
+        .status-seguro { background-color: #f0fdf4; color: #166534; border-left-color: #22c55e; }
+        .status-suspeito { background-color: #fef2f2; color: #991b1b; border-left-color: #ef4444; }
+        .status-erro { background-color: #fffbeb; color: #92400e; border-left-color: #f59e0b; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <header class="gradient-bg text-white sticky top-0 z-50 shadow-md">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <div class="bg-white p-3 rounded-xl mr-3 shadow-md" aria-hidden="true">
+                        <i class="fas fa-fingerprint text-[var(--primary)] text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold">Analisador de Documentos</h1>
+                        <p class="text-sm opacity-90">Análise de integridade em tempo real</p>
+                    </div>
+                </div>
+                <nav class="flex items-center gap-2">
+                    <a href="#" class="nav-link"><i class="fas fa-home mr-1"></i> Início</a>
+                    <a href="#" class="nav-link"><i class="fas fa-info-circle mr-1"></i> Sobre</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-12">
+        <div class="max-w-3xl mx-auto card bg-white p-8">
+            <header class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">
+                    <i class="fas fa-shield-alt mr-2 text-[var(--primary)]"></i>Análise de Integridade
+                </h2>
+                <p class="text-gray-600">
+                    Envie um documento para extrair o texto e identificar possíveis irregularidades.
+                </p>
+            </header>
+
+            <form action="/" method="post" enctype="multipart/form-data">
+                <label for="file-upload" class="file-input-label flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                    <div id="upload-prompt" class="flex flex-col items-center justify-center text-center">
+                        <i class="fas fa-cloud-upload-alt text-gray-400 text-4xl mb-3"></i>
+                        <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Clique para enviar</span> ou arraste</p>
+                        <p class="text-xs text-gray-500">PDF, JPG, PNG (MAX. 1MB)</p>
+                    </div>
+                    <div id="file-info" class="hidden text-center">
+                         <i class="fas fa-file-alt text-indigo-500 text-4xl mb-3"></i>
+                         <p class="text-sm text-gray-700 font-semibold" id="file-name"></p>
+                    </div>
+                    <input id="file-upload" name="file" type="file" class="hidden" required/>
+                </label>
+                 <button type="submit" id="submit-btn" class="hidden mt-4 w-full btn bg-[var(--primary)] hover:bg-[var(--secondary)] text-white font-bold py-3 px-4">
+                    <i class="fas fa-search mr-2"></i> Analisar Documento
+                </button>
+            </form>
+
+            {% if erro_upload %}
+            <div class="mt-6 p-4 rounded-lg status-erro border-l-4">
+                <h3 class="font-bold text-lg"><i class="fas fa-exclamation-triangle mr-2"></i>Erro no Upload</h3>
+                <p>{{ erro_upload }}</p>
+            </div>
+            {% endif %}
+
+            {% if resultado %}
+            <div class="mt-8 border-t border-gray-200 pt-6">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Resultado da Análise</h2>
+                
+                <div class="p-4 rounded-lg border-l-4 mb-6
+                    {% if resultado.status == 'SEGURO' %} status-seguro
+                    {% elif resultado.status == 'SUSPEITO' %} status-suspeito
+                    {% else %} status-erro {% endif %}">
+                    
+                    <h3 class="font-bold text-lg">
+                        {% if resultado.status == 'SEGURO' %} <i class="fas fa-check-circle mr-2"></i>Status: Documento Seguro 
+                        {% elif resultado.status == 'SUSPEITO' %} <i class="fas fa-exclamation-triangle mr-2"></i>Status: Documento Suspeito
+                        {% else %} <i class="fas fa-times-circle mr-2"></i>Status: Erro na Análise
+                        {% endif %}
+                    </h3>
+                    
+                    {% if resultado.erros %}
+                    <ul class="list-disc list-inside mt-2 text-sm space-y-1">
+                        {% for erro in resultado.erros %}
+                        <li>{{ erro }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+
+                <div class="mb-6 text-sm">
+                    <strong>Hash do Conteúdo (SHA-256):</strong>
+                    <div class="document-hash text-xs mt-1 break-all">{{ resultado.hash }}</div>
+                </div>
+
+                {% if resultado.texto %}
+                <div>
+                    <h3 class="font-semibold text-gray-700 mb-2">Texto Extraído:</h3>
+                    <div class="w-full h-48 p-3 border rounded-lg bg-gray-50 text-xs text-gray-600 overflow-auto">
+                        <pre style="white-space: pre-wrap; word-wrap: break-word;">{{ resultado.texto }}</pre>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </main>
+    </div>
+    
+    <script>
+        const fileInput = document.getElementById('file-upload');
+        const submitBtn = document.getElementById('submit-btn');
+        const uploadPrompt = document.getElementById('upload-prompt');
+        const fileInfo = document.getElementById('file-info');
+        const fileNameDisplay = document.getElementById('file-name');
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                fileNameDisplay.textContent = fileInput.files[0].name;
+                uploadPrompt.classList.add('hidden');
+                fileInfo.classList.remove('hidden');
+                submitBtn.classList.remove('hidden');
+            } else {
+                uploadPrompt.classList.remove('hidden');
+                fileInfo.classList.add('hidden');
+                submitBtn.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

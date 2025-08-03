@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Prefeitura de Apodi/RN{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1E8A57; /* Verde da Prefeitura de Apodi */
+            --secondary: #0F4A2D;
+        }
+        body { font-family: 'Inter', system-ui, sans-serif; color: #334155; }
+        .gradient-bg { background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%); }
+        .nav-link { transition: all 0.3s ease; padding: 0.5rem 1rem; border-radius: 6px; }
+        .nav-link:hover, .nav-link.active { background-color: rgba(255, 255, 255, 0.15); }
+        .btn { transition: all 0.3s; border-radius: 8px; font-weight: 500; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+    </style>
+    {% block head_extra %}{% endblock %}
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <header class="gradient-bg text-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <a href="/" class="flex items-center mb-4 md:mb-0">
+                    <img src="{{ url_for('static', filename='brasao.png') }}" alt="Brasão da Prefeitura de Apodi" class="h-14 mr-3">
+                    <div>
+                        <h1 class="text-xl font-bold leading-tight">Prefeitura Municipal de Apodi</h1>
+                        <p class="text-sm opacity-90">Sistema de Integridade Documental</p>
+                    </div>
+                </a>
+                <nav class="flex items-center gap-2">
+                    <a href="/" class="nav-link"><i class="fas fa-home mr-1"></i> Início</a>
+                    <a href="/transparencia" class="nav-link"><i class="fas fa-search mr-1"></i> Transparência</a>
+                    <a href="/verificador" class="nav-link"><i class="fas fa-shield-alt mr-1"></i> Verificador</a>
+                    <a href="/login" class="btn bg-white text-[var(--primary)] font-medium px-5 py-2.5 ml-2">
+                        <i class="fas fa-sign-in-alt mr-2"></i> Acessar
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-gray-800 text-gray-300 py-8">
+        <div class="container mx-auto px-4 text-center text-sm">
+            <p>© 2025 Prefeitura Municipal de Apodi. Todos os direitos reservados.</p>
+            <p class="mt-2 opacity-70">Protótipo desenvolvido para o Hackathon de Seleção 4.8401.1V</p>
+        </div>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

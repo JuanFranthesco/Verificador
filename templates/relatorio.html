@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório de Verificação - {{ resultado.status }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; color: #333; }
+        .container { max-width: 800px; margin: auto; }
+        h1 { margin-top: 0; font-size: 1.5em; }
+        .status-seguro { color: #166534; }
+        .status-suspeito { color: #991b1b; }
+        .info-grid { display: grid; grid-template-columns: 150px 1fr; gap: 10px; margin-top: 20px; font-size: 0.9em; }
+        dt { font-weight: bold; }
+        dd { margin: 0; word-wrap: break-word; }
+        .erros-lista { list-style-type: none; padding-left: 0; }
+        .erros-lista li { background-color: #fff3f3; border-left: 4px solid #dc3545; padding: 10px; margin-bottom: 8px; }
+        pre { background-color: #f8f9fa; padding: 15px; border: 1px solid #ddd; border-radius: 4px; white-space: pre-wrap; word-wrap: break-word; font-family: monospace; font-size: 0.9em; }
+        mark { background-color: #fef08a; padding: 0.2em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% if resultado.status == 'SEGURO' %}
+            <h1 class="status-seguro">✅ Relatório de Verificação: Documento Seguro</h1>
+        {% else %}
+            <h1 class="status-suspeito">⚠️ Relatório de Verificação: Documento Suspeito</h1>
+        {% endif %}
+
+        <dl class="info-grid">
+            <dt>Hash do Conteúdo:</dt>
+            <dd><code>{{ resultado.hash }}</code></dd>
+            <dt>Data da Análise:</dt>
+            <dd>{{ data_analise }}</dd>
+            <dt>Pontuação de Risco:</dt>
+            <dd>{{ resultado.score }} (Nível: {{ resultado.nivel }})</dd>
+        </dl>
+        <hr class="my-4">
+        {% if resultado.erros %}
+            <h3 class="font-bold">Inconsistências Detectadas:</h3>
+            <ul class="erros-lista">
+                {% for erro in resultado.erros %}
+                    <li>{{ erro }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Nenhuma inconsistência foi detectada.</p>
+        {% endif %}
+        <h3 class="font-bold mt-4">Texto com Evidências Realçadas:</h3>
+        <pre>{{ resultado.texto_realcado | safe }}</pre>
+    </div>
+</body>
+</html>

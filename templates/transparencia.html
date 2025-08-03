@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal da Transparência - Prefeitura de Apodi/RN</title>
+    <meta name="description" content="Acesso ao Portal de Transparência da Prefeitura de Apodi/RN">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1E8A57; /* Verde principal da Prefeitura de Apodi */
+            --secondary: #0F4A2D; /* Verde mais escuro para gradientes */
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            line-height: 1.6;
+            color: #334155;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+        }
+        
+        .card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-link {
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+        }
+        
+        .nav-link:hover, .nav-link:focus {
+            background-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            outline: none;
+        }
+        
+        .btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 8px;
+            font-weight: 500;
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            background-color: var(--secondary);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .tab-btn {
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+        }
+        
+        .tab-btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .tab-btn:not(.active):hover {
+            background-color: #e6f3ee;
+        }
+        
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .status-approved {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-rejected {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <a href="index.html" class="flex items-center mb-4 md:mb-0">
+                    <img src="/static/brasao.png" alt="Brasão da Prefeitura de Apodi" class="h-14 mr-3">
+                    <div>
+                        <h1 class="text-xl font-bold leading-tight">Prefeitura Municipal de Apodi</h1>
+                        <p class="text-sm opacity-90">Estado do Rio Grande do Norte</p>
+                    </div>
+                </a>
+                
+                <nav class="flex items-center gap-2">
+                    <a href="index.html" class="nav-link"><i class="fas fa-home mr-1"></i> Início</a>
+                    <a href="transparencia.html" class="nav-link active"><i class="fas fa-search mr-1"></i> Transparência</a>
+                    <a href="verificador.html" class="nav-link"><i class="fas fa-shield-alt mr-1"></i> Verificador</a>
+                    <a href="login.html" class="btn bg-white text-[var(--primary)] font-medium px-5 py-2.5 ml-2">
+                        <i class="fas fa-sign-in-alt mr-2"></i> Acessar
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Modal de Solicitação de Acesso -->
+    <div id="accessModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-900">Solicitar Acesso ao Documento</h3>
+                <button onclick="closeAccessModal()" class="text-gray-500 hover:text-gray-700">&times;</button>
+            </div>
+            <form id="accessForm" class="space-y-4">
+                <div>
+                    <label for="fullName" class="block text-sm font-medium text-gray-700 mb-1">Nome Completo *</label>
+                    <input type="text" id="fullName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                </div>
+                <div>
+                    <label for="reason" class="block text-sm font-medium text-gray-700 mb-1">Justificativa *</label>
+                    <textarea id="reason" rows="3" required class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="Descreva o motivo do acesso"></textarea>
+                </div>
+                <div class="flex justify-end gap-3 pt-4">
+                    <button type="button" onclick="closeAccessModal()" class="btn-outline px-4 py-2">Cancelar</button>
+                    <button type="submit" class="btn px-6 py-2"><i class="fas fa-paper-plane mr-2"></i> Enviar Solicitação</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Conteúdo Principal -->
+    <main class="container mx-auto px-4 py-12">
+        <section class="mb-8 text-center">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Portal da Transparência</h1>
+            <p class="text-lg text-gray-600 mb-6">Acesso a documentos públicos e informações governamentais</p>
+            
+            <div class="flex flex-wrap justify-center gap-4 mb-8">
+                <button id="emendasBtn" class="tab-btn active"><i class="fas fa-file-invoice-dollar mr-2"></i> Emendas</button>
+                <button id="receitasBtn" class="tab-btn"><i class="fas fa-money-bill-wave mr-2"></i> Receitas</button>
+                <button id="despesasBtn" class="tab-btn"><i class="fas fa-hand-holding-usd mr-2"></i> Despesas</button>
+            </div>
+        </section>
+
+        <!-- Seção de Documentos - Emendas -->
+        <section id="emendasSection">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Emendas Parlamentares</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Documento 1 (Público) -->
+                <div class="card bg-white">
+                    <div class="p-6">
+                        <h3 class="font-bold text-lg text-gray-900">Emenda 001/2023</h3>
+                        <p class="text-sm text-gray-500 mb-4">Parlamentar: Dep. João Silva</p>
+                        <div class="flex gap-2">
+                            <button class="btn-outline flex-1 py-2 text-sm"><i class="far fa-eye mr-2"></i> Visualizar</button>
+                            <button class="btn flex-1 py-2 text-sm"><i class="fas fa-download mr-2"></i> Baixar</button>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <p class="text-xs text-gray-500 mb-1"><i class="fas fa-fingerprint mr-1"></i>Selo de Integridade (SHA-256):</p>
+                            <p class="text-xs font-mono text-gray-600 break-all">a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Documento 2 (Restrito) -->
+                <div class="card bg-white">
+                    <div class="p-6">
+                        <h3 class="font-bold text-lg text-gray-900">Emenda 045/2023</h3>
+                        <p class="text-sm text-gray-500 mb-4">Parlamentar: Dep. Maria Souza</p>
+                        <div class="flex gap-2">
+                            <button class="btn-outline flex-1 py-2 text-sm" disabled><i class="fas fa-lock mr-2"></i> Acesso Restrito</button>
+                            <button onclick="openAccessModal()" class="btn flex-1 py-2 text-sm"><i class="fas fa-file-alt mr-2"></i> Solicitar Acesso</button>
+                        </div>
+                         <div class="mt-4 pt-4 border-t border-gray-200">
+                            <p class="text-xs text-gray-500 mb-1"><i class="fas fa-fingerprint mr-1"></i>Selo de Integridade (SHA-256):</p>
+                            <p class="text-xs font-mono text-gray-600 break-all">f6e5d4c3b2a1f6e5d4c3b2a1f6e5d4c3b2a1f6e5d4c3b2a1f6e5d4c3b2a1f6e5</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção de Documentos - Receitas (oculta) -->
+        <section id="receitasSection" class="hidden">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Receitas do Executivo</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Documento 3 (Público) -->
+                <div class="card bg-white">
+                    <div class="p-6">
+                        <h3 class="font-bold text-lg text-gray-900">Relatório de Arrecadação</h3>
+                        <p class="text-sm text-gray-500 mb-4">Período: Jan/2024</p>
+                        <div class="flex gap-2">
+                            <button class="btn-outline flex-1 py-2 text-sm"><i class="far fa-eye mr-2"></i> Visualizar</button>
+                            <button class="btn flex-1 py-2 text-sm"><i class="fas fa-download mr-2"></i> Baixar</button>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <p class="text-xs text-gray-500 mb-1"><i class="fas fa-fingerprint mr-1"></i>Selo de Integridade (SHA-256):</p>
+                            <p class="text-xs font-mono text-gray-600 break-all">1a2b3c4d5e6f1a2b3c4d5e6f1a2b3c4d5e6f1a2b3c4d5e6f1a2b3c4d5e6f1a2b</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Documento 4 (Restrito) -->
+                <div class="card bg-white">
+                    <div class="p-6">
+                        <h3 class="font-bold text-lg text-gray-900">Repasses Estaduais</h3>
+                        <p class="text-sm text-gray-500 mb-4">Período: 1º Semestre/2024</p>
+                        <div class="flex gap-2">
+                            <button class="btn-outline flex-1 py-2 text-sm" disabled><i class="fas fa-lock mr-2"></i> Acesso Restrito</button>
+                            <button onclick="openAccessModal()" class="btn flex-1 py-2 text-sm"><i class="fas fa-file-alt mr-2"></i> Solicitar Acesso</button>
+                        </div>
+                         <div class="mt-4 pt-4 border-t border-gray-200">
+                            <p class="text-xs text-gray-500 mb-1"><i class="fas fa-fingerprint mr-1"></i>Selo de Integridade (SHA-256):</p>
+                            <p class="text-xs font-mono text-gray-600 break-all">6f5e4d3c2b1a6f5e4d3c2b1a6f5e4d3c2b1a6f5e4d3c2b1a6f5e4d3c2b1a6f5e</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção de Documentos - Despesas (oculta) -->
+        <section id="despesasSection" class="hidden">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Despesas do Executivo</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Documento 5 (Público) -->
+                <div class="card bg-white">
+                    <div class="p-6">
+                        <h3 class="font-bold text-lg text-gray-900">Pagamento de Fornecedores</h3>
+                        <p class="text-sm text-gray-500 mb-4">Mês: Julho/2024</p>
+                        <div class="flex gap-2">
+                            <button class="btn-outline flex-1 py-2 text-sm"><i class="far fa-eye mr-2"></i> Visualizar</button>
+                            <button class="btn flex-1 py-2 text-sm"><i class="fas fa-download mr-2"></i> Baixar</button>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <p class="text-xs text-gray-500 mb-1"><i class="fas fa-fingerprint mr-1"></i>Selo de Integridade (SHA-256):</p>
+                            <p class="text-xs font-mono text-gray-600 break-all">c1d2e3f4a5b6c1d2e3f4a5b6c1d2e3f4a5b6c1d2e3f4a5b6c1d2e3f4a5b6c1d2</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Documento 6 (Restrito) -->
+                <div class="card bg-white">
+                    <div class="p-6">
+                        <h3 class="font-bold text-lg text-gray-900">Folha de Pagamento</h3>
+                        <p class="text-sm text-gray-500 mb-4">Mês: Julho/2024</p>
+                        <div class="flex gap-2">
+                            <button class="btn-outline flex-1 py-2 text-sm" disabled><i class="fas fa-lock mr-2"></i> Acesso Restrito</button>
+                            <button onclick="openAccessModal()" class="btn flex-1 py-2 text-sm"><i class="fas fa-file-alt mr-2"></i> Solicitar Acesso</button>
+                        </div>
+                         <div class="mt-4 pt-4 border-t border-gray-200">
+                            <p class="text-xs text-gray-500 mb-1"><i class="fas fa-fingerprint mr-1"></i>Selo de Integridade (SHA-256):</p>
+                            <p class="text-xs font-mono text-gray-600 break-all">b6a5f4e3d2c1b6a5f4e3d2c1b6a5f4e3d2c1b6a5f4e3d2c1b6a5f4e3d2c1b6a5</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção de Minhas Solicitações -->
+        <section class="mt-12">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Minhas Solicitações</h2>
+            <div class="overflow-x-auto card bg-white">
+                <table class="min-w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Documento</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-6 py-4">Emenda 045/2023</td>
+                            <td class="px-6 py-4"><span class="status-pill status-approved"><i class="fas fa-check-circle mr-1"></i> Aprovado</span></td>
+                            <td class="px-6 py-4"><a href="#" class="text-[var(--primary)] hover:underline">Baixar</a></td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4">Despesas com Saúde</td>
+                            <td class="px-6 py-4"><span class="status-pill status-rejected"><i class="fas fa-times-circle mr-1"></i> Negado</span></td>
+                            <td class="px-6 py-4"><a href="#" class="text-gray-600 hover:underline">Ver Detalhes</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Adiciona um listener para garantir que o DOM está carregado antes de executar o script
+        document.addEventListener('DOMContentLoaded', () => {
+            // Funções para o modal de acesso
+            const accessModal = document.getElementById('accessModal');
+            const accessForm = document.getElementById('accessForm');
+
+            // Torna as funções acessíveis globalmente para o onclick do HTML
+            window.openAccessModal = function() {
+                if (accessModal) accessModal.classList.remove('hidden');
+            }
+            
+            window.closeAccessModal = function() {
+                if (accessModal) accessModal.classList.add('hidden');
+            }
+            
+            if (accessForm) {
+                accessForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    alert('Solicitação enviada com sucesso!');
+                    closeAccessModal();
+                });
+            }
+
+            // Controle das abas de conteúdo
+            const tabs = ['emendas', 'receitas', 'despesas'];
+            tabs.forEach(tabId => {
+                const button = document.getElementById(`${tabId}Btn`);
+                const section = document.getElementById(`${tabId}Section`);
+
+                if (button && section) {
+                    button.addEventListener('click', function() {
+                        // Esconde todas as seções e desativa todos os botões
+                        tabs.forEach(t => {
+                            const otherSection = document.getElementById(`${t}Section`);
+                            const otherButton = document.getElementById(`${t}Btn`);
+                            if(otherSection) otherSection.classList.add('hidden');
+                            if(otherButton) otherButton.classList.remove('active');
+                        });
+                        
+                        // Mostra a seção clicada e ativa o botão correspondente
+                        section.classList.remove('hidden');
+                        button.classList.add('active');
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
