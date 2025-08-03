@@ -1,6 +1,1 @@
-Flask
-gunicorn
-requests
-python-dotenv
-supabase
-werkzeug
+
